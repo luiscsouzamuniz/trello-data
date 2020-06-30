@@ -77,7 +77,8 @@ class App extends Component {
       click: { json: null, type: null },
       alert: null,
       type: null,
-      json: null
+      json: null,
+      labels: []
     });
   };
 
