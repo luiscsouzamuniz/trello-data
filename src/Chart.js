@@ -130,8 +130,6 @@ export class Charts extends Component {
       });
     }
 
-    console.log(barChart);
-
     this.setState({
       barChart
     });
