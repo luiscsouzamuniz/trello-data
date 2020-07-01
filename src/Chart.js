@@ -81,17 +81,8 @@ export class Charts extends Component {
     let barChart;
 
     if (!isEmptyOrNil(labels)) {
-      barChart = labels.map(label => [
-        label,
-        trello.cards
-          .filter(
-            card =>
-              parseInt(card.id.substring(0, 8), 16) >
-                dateTime.toString().substr(0, 10) &&
-              card.labels.map(label => label.name).includes(label)
-          )
-          .map(card => card).length,
-        trello.cards
+      barChart = labels.map(label => {
+        const complete = trello.cards
           .filter(
             card =>
               card.dueComplete &&
@@ -99,8 +90,9 @@ export class Charts extends Component {
                 dateTime.toString().substr(0, 10) &&
               card.labels.map(label => label.name).includes(label)
           )
-          .map(card => card).length,
-        trello.cards
+          .map(card => card).length;
+
+        const incomplete = trello.cards
           .filter(
             card =>
               !card.dueComplete &&
@@ -108,20 +100,13 @@ export class Charts extends Component {
                 dateTime.toString().substr(0, 10) &&
               card.labels.map(label => label.name).includes(label)
           )
-          .map(card => card).length
-      ]);
+          .map(card => card).length;
+
+        return [label, complete, complete, incomplete, incomplete];
+      });
     } else {
-      barChart = trello.labels.map(label => [
-        label.name,
-        trello.cards
-          .filter(
-            card =>
-              parseInt(card.id.substring(0, 8), 16) >
-                dateTime.toString().substr(0, 10) &&
-              card.labels.map(label => label.name).includes(label.name)
-          )
-          .map(card => card).length,
-        trello.cards
+      barChart = trello.labels.map(label => {
+        const complete = trello.cards
           .filter(
             card =>
               card.dueComplete &&
@@ -129,8 +114,9 @@ export class Charts extends Component {
                 dateTime.toString().substr(0, 10) &&
               card.labels.map(label => label.name).includes(label.name)
           )
-          .map(card => card).length,
-        trello.cards
+          .map(card => card).length;
+
+        const incomplete = trello.cards
           .filter(
             card =>
               !card.dueComplete &&
@@ -138,9 +124,13 @@ export class Charts extends Component {
                 dateTime.toString().substr(0, 10) &&
               card.labels.map(label => label.name).includes(label)
           )
-          .map(card => card).length
-      ]);
+          .map(card => card).length;
+
+        return [label.name, complete, complete, incomplete, incomplete];
+      });
     }
+
+    console.log(barChart);
 
     this.setState({
       barChart
@@ -227,9 +217,10 @@ export class Charts extends Component {
               data={[
                 [
                   "Etiquetas",
-                  "Atividades por Etiqueta",
                   "Atividades Entregues",
-                  "Atividades Pendentes"
+                  { role: "annotation" },
+                  "Atividades Pendentes",
+                  { role: "annotation" }
                 ],
                 ...barChart
               ]}
@@ -239,6 +230,11 @@ export class Charts extends Component {
                 hAxis: {
                   title: "Atividades",
                   minValue: 0
+                },
+                animation: {
+                  startup: true,
+                  easing: "linear",
+                  duration: 1500
                 },
                 vAxis: {
                   title: "Etiquetas"
